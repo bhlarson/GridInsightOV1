@@ -1,0 +1,9 @@
+{
+  "name": "grid-insight-ov1",
+  "version": "0.0.0",
+  "description": "GridInsightOV1",
+  "main": "server.js",
+  "author": {
+    "name": "blarson"
+  }
+}

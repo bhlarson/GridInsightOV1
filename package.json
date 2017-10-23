@@ -1,9 +1,18 @@
 {
   "name": "grid-insight-ov1",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "GridInsightOV1",
   "main": "server.js",
   "author": {
     "name": "blarson"
+  },
+  "dependencies": {
+    "serialport": "^5.0.0",
+    "virtual-serialport": "0.2.1",
+    "dotenv": "4.0.0",
+    "express": "^4.15.4",
+    "log4js": "^2.3.3",
+    "mysql": "^2.14.1",
+    "socket.io": "^2.0.4"
   }
 }

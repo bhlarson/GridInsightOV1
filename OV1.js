@@ -76,9 +76,9 @@ OVPort.prototype = {
         console.log("in Input");
         if (command.name) {
             this.writeBuffer.push(command.name);
-            if (command.value)
+            if (command.value && (command.name == 'MODE' || command.name == 'SYNC')) 
             {
-                this.writeBuffer.push(command.value);
+                this.writeBuffer.push(command.value.toString());
             }
             this.writeBuffer.push('\r\n')
         }

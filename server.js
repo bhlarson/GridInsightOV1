@@ -16,22 +16,20 @@ log4js.configure({
 });
 const cmdLog = log4js.getLogger('command');
 
-port = new ov1.OVPort();
-port.Output(function (data) {
+var ov1Port = new ov1.OVPort();
+ov1Port.Output(function (data) {
     console.log(data);
     if (data.serialData && ioSocket) {
         ioSocket.emit('data', data.serialData);
     }
 });
 var config = { log: cmdLog, portName: process.env.serialport };
-port.Start(config, function (result) {
+ov1Port.Start(config, function (result) {
     console.log(result);
 });
  
-
-
 command = { name: 'VRSN' };
-port.Input(command);
+ov1Port.Input(command);
 
 // Home database credentials
 var pool = mysql.createPool({
@@ -71,6 +69,9 @@ io.on('connection', function (socket) {
         console.log('socket.io error:' + err);
     })
     socket.on('Command', function (data) {
+        command = { name: data.cmd, value: data.val };
+        ov1Port.Input(command);
+
         console.log('Command ' + JSON.stringify(data));
     });
 });

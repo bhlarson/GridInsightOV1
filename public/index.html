@@ -6,6 +6,19 @@
     <link href="css/style.css" rel="stylesheet" />
 </head>
 <body>
+    <fieldset>
+        <label>Command:</label>
+        <select id="cmdSel">
+            <option value="MODE">MODE</option>
+            <option value="SYNC">SYNC</option>
+            <option value="RESETs">RESET</option>
+            <option value="VRSN">VERSION</option>
+            <option value="SERL">SERIAL NUMBER</option>
+        </select>
+        Value: <input type="number" id="cmdVal"><br>
+        <input type="button" id="OV1COMMAND" onclick="OV1Command()" value="Submit" />
+    </fieldset>
+
     <textarea id="ov1msg"></textarea>
 
     <script src="js/socket.io.js"></script>

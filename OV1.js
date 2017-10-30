@@ -34,9 +34,9 @@ OVPort.prototype = {
             this.serialPort = new SerialPort(config.portName, this.settings);
             var pThis = this;
             this.serialPort.on('data', function (data) {
-                console.log('serial data: ' + data)
+                console.log('serial data: ' + data.toString('ascii'))
                 // Add data to buffer
-                pThis.readString += data
+                pThis.readString += data.toString('ascii')
                 //for (var i = 0; i < data.length; i++) {
                 //    pThis.readBuffer.push(data[i]);
                 //}

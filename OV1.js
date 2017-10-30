@@ -5,7 +5,7 @@ if (process.env.simulation == 'true') {
     SerialPort = require('virtual-serialport');
 }
 else {
-    SerialPort = require('serialport');
+    SerialPort = require('serialport'); 115200
 }
 
 var OVPort = function () {
@@ -34,11 +34,13 @@ OVPort.prototype = {
             this.serialPort = new SerialPort(config.portName, this.settings);
             var pThis = this;
             this.serialPort.on('data', function (data) {
+                console.log('serial data: ' + data)
                 // Add data to buffer
-                for (var i = 0; i < data.length; i++) {
-                    pThis.readBuffer.push(String.fromCharCode(data[i]));
-                }
-                console.log(pThis.readBuffer)
+                pThis.readBuffer += data
+                //for (var i = 0; i < data.length; i++) {
+                //    pThis.readBuffer.push(data[i]);
+                //}
+                console.log('Appended read buffer: ' + pThis.readBuffer)
                 pThis.Evaluate(pThis.readBuffer);
             });
             this.serialPort.on('err', function (err) {
@@ -80,7 +82,7 @@ OVPort.prototype = {
             {
                 this.writeBuffer.push(command.value.toString());
             }
-            this.writeBuffer.push('\r\n')
+            this.writeBuffer.push('\n')
         }
 
         this.Evaluate();
@@ -103,13 +105,14 @@ OVPort.prototype = {
     Evaluate: function () {
         while (this.writeBuffer.length > 0) {
             var sendBuffer = this.writeBuffer.shift()
+            console.log('Evaluate write ' + sendBuffer);
             this.serialPort.write(sendBuffer, function (err, result) {
                 if (err) {
                     console.log('write error ' + err);
                     //reject({ result: module.exports.CompleteEnum.ACTION_FAIL, error: err });
                 }
                 else {
-                    console.log('serial write ' + sendBuffer.toString('hex'));
+                    console.log('Evaluate write result ' + result);
                 }
             });
         }

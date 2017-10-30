@@ -18,8 +18,8 @@ var OVPort = function () {
     this.log = {};
     this.listeners = [];
     this.complete = [];
-    this.writeBuffer = [];
-    this.readBuffer = [];
+    this.writeString = '';
+    this.readString = '';
 }
 
 OVPort.constructor = OVPort
@@ -36,12 +36,12 @@ OVPort.prototype = {
             this.serialPort.on('data', function (data) {
                 console.log('serial data: ' + data)
                 // Add data to buffer
-                pThis.readBuffer += data
+                pThis.readString += data
                 //for (var i = 0; i < data.length; i++) {
                 //    pThis.readBuffer.push(data[i]);
                 //}
-                console.log('Appended read buffer: ' + pThis.readBuffer)
-                pThis.Evaluate(pThis.readBuffer);
+                console.log('Appended read buffer: ' + pThis.readString)
+                pThis.Evaluate(pThis.readString);
             });
             this.serialPort.on('err', function (err) {
                 var result = { err: err };
@@ -77,12 +77,12 @@ OVPort.prototype = {
     Input: function (command) {
         console.log("in Input");
         if (command.name) {
-            this.writeBuffer.push(command.name);
+            this.writeString += command.name;
             if (command.value && (command.name == 'MODE' || command.name == 'SYNC')) 
             {
-                this.writeBuffer.push(command.value.toString());
+                this.writeString += command.value.toString();
             }
-            this.writeBuffer.push('\n')
+            this.writeString += '\n'
         }
 
         this.Evaluate();
@@ -103,8 +103,9 @@ OVPort.prototype = {
     },
 
     Evaluate: function () {
-        while (this.writeBuffer.length > 0) {
-            var sendBuffer = this.writeBuffer.shift()
+        while (this.writeString.length > 0) {
+            var sendBuffer = this.writeString;
+            this.writeString = ''
             console.log('Evaluate write ' + sendBuffer);
             this.serialPort.write(sendBuffer, function (err, result) {
                 if (err) {
@@ -117,8 +118,9 @@ OVPort.prototype = {
             });
         }
 
-        if (this.readBuffer.length && this.listeners) {
-            var sendBuffer = this.readBuffer.splice(0, this.readBuffer.length);
+        if (this.readString.length && this.listeners) {
+            var sendBuffer = this.readString;
+            this.readString = '';
 
             // Send buffer to listeners
             var data = { serialData: sendBuffer };

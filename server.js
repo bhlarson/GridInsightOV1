@@ -1,4 +1,4 @@
-console.log("Starting CurtainControl on " + process.platform + " with node version " + process.version);
+console.log("Starting GritInsightOV1 on " + process.platform + " with node version " + process.version);
 require('dotenv').config({ path: './config.env' });
 var express = require('express');
 var app = express();

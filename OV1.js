@@ -35,17 +35,17 @@ OVPort.prototype = {
             this.serialPort.setDefaultEncoding('ascii');
             var pThis = this;
             this.serialPort.on('data', function (data) {
-                console.log('serial data ascii: ' + data.toString('ascii'));
-                console.log('serial data hex: ' + data.toString('utf8'));
-                console.log('serial data hex: ' + data.toString('latin1'));
+                //console.log('serial data ascii: ' + data.toString('ascii'));
+                //console.log('serial data utf8: ' + data.toString('utf8'));
+                //console.log('serial data latin1: ' + data.toString('latin1'));
                 console.log('serial data hex: ' + data.toString('hex'));
                 // Add data to buffer
-                pThis.readString += data.toString('ascii');
+                //pThis.readString += data.toString('ascii');
                 //for (var i = 0; i < data.length; i++) {
                 //    pThis.readBuffer.push(data[i]);
                 //}
-                console.log('Appended read buffer: ' + pThis.readString);
-                pThis.Evaluate(pThis.readString);
+                //console.log('Appended read buffer: ' + pThis.readString);y
+                //pThis.Evaluate(pThis.readString);
             });
             this.serialPort.on('err', function (err) {
                 var result = { err: err };

@@ -32,13 +32,18 @@ OVPort.prototype = {
             this.log = config.log;
             this.complete.push(complete);
             this.serialPort = new SerialPort(config.portName, this.settings);
-            this.serialPort.setDefaultEncoding('ascii');
             var pThis = this;
             this.serialPort.on('data', function (data) {
                 //console.log('serial data ascii: ' + data.toString('ascii'));
                 //console.log('serial data utf8: ' + data.toString('utf8'));
                 //console.log('serial data latin1: ' + data.toString('latin1'));
-                console.log('serial data hex: ' + data.toString('hex'));
+                console.log('serial data: ' + data.toString('hex'));
+
+                var dataBuffer = [];
+                for (var i = 0; i < data.length; i++) {
+                    dataBuffer.push(data[i]);
+                }
+                console.log('buffer data: ' + dataBuffer.toString('hex'));
                 // Add data to buffer
                 //pThis.readString += data.toString('ascii');
                 //for (var i = 0; i < data.length; i++) {
@@ -111,7 +116,7 @@ OVPort.prototype = {
             var sendBuffer = this.writeString;
             this.writeString = ''
             console.log('Evaluate write ' + sendBuffer);
-            this.serialPort.write(sendBuffer, 'ascii', function (err, result) {
+            this.serialPort.write(sendBuffer, function (err, result) {
                 if (err) {
                     console.log('write error ' + err);
                     //reject({ result: module.exports.CompleteEnum.ACTION_FAIL, error: err });

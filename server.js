@@ -4,11 +4,11 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var ioSocket;
+var ioSocket; 
 var ov1 = require('./OV1');
 var mysql = require('mysql');
 var log4js = require('log4js');
-console.log("All External Dependancies Found");
+console.log("Dependancies Found");
 
 log4js.configure({
     appenders: { command: { type: 'file', filename: 'state.log' } },

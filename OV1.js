@@ -7,6 +7,7 @@ if (process.env.simulation == 'true') {
 else {
     SerialPort = require('serialport'); 115200
 }
+var Readline = SerialPort.parsers.Readline;
 
 var OVPort = function () {
     this.active = false;
@@ -32,26 +33,31 @@ OVPort.prototype = {
             this.log = config.log;
             this.complete.push(complete);
             this.serialPort = new SerialPort(config.portName, this.settings);
-            var pThis = this;
-            this.serialPort.on('data', function (data) {
-                //console.log('serial data ascii: ' + data.toString('ascii'));
-                //console.log('serial data utf8: ' + data.toString('utf8'));
-                //console.log('serial data latin1: ' + data.toString('latin1'));
-                console.log('serial data: ' + data.toString('hex'));
+            const parser = new Readline();
+            this.serialPort.pipe(parser);
+            parser.on('data', console.log);
+            this.serialPort.write('ROBOT PLEASE RESPOND\n');
 
-                var dataBuffer = [];
-                for (var i = 0; i < data.length; i++) {
-                    dataBuffer.push(data[i]);
-                }
-                console.log('buffer data: ' + dataBuffer.toString('hex'));
-                // Add data to buffer
-                //pThis.readString += data.toString('ascii');
-                //for (var i = 0; i < data.length; i++) {
-                //    pThis.readBuffer.push(data[i]);
-                //}
-                //console.log('Appended read buffer: ' + pThis.readString);y
-                //pThis.Evaluate(pThis.readString);
-            });
+            var pThis = this;
+            //this.serialPort.on('data', function (data) {
+            //    //console.log('serial data ascii: ' + data.toString('ascii'));
+            //    //console.log('serial data utf8: ' + data.toString('utf8'));
+            //    //console.log('serial data latin1: ' + data.toString('latin1'));
+            //    console.log('serial data: ' + data.toString('hex'));
+
+            //    var dataBuffer = [];
+            //    for (var i = 0; i < data.length; i++) {
+            //        dataBuffer.push(data[i]);
+            //    }
+            //    console.log('buffer data: ' + dataBuffer.toString('hex'));
+            //    // Add data to buffer
+            //    //pThis.readString += data.toString('ascii');
+            //    //for (var i = 0; i < data.length; i++) {
+            //    //    pThis.readBuffer.push(data[i]);
+            //    //}
+            //    //console.log('Appended read buffer: ' + pThis.readString);y
+            //    //pThis.Evaluate(pThis.readString);
+            //});
             this.serialPort.on('err', function (err) {
                 var result = { err: err };
                 this.complete.forEach(function callback(complete) {

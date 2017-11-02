@@ -32,7 +32,8 @@ OVPort.prototype = {
             this.log = config.log;
             this.complete.push(complete);
             this.serialPort = new SerialPort(config.portName, this.settings);
-            const parser = port.pipe(new Delimiter({ delimiter: Buffer.from('EOL') }));
+            const Delimiter = SerialPort.parsers.Delimiter;
+            const parser = this.serialPort.pipe(new Delimiter({ delimiter: Buffer.from('EOL') }));
             parser.on('data', console.log);
 
             var pThis = this;

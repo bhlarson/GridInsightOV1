@@ -5,9 +5,8 @@ if (process.env.simulation == 'true') {
     SerialPort = require('virtual-serialport');
 }
 else {
-    SerialPort = require('serialport'); 115200
+    SerialPort = require('serialport');
 }
-var Readline = SerialPort.parsers.Readline;
 
 var OVPort = function () {
     this.active = false;
@@ -33,10 +32,10 @@ OVPort.prototype = {
             this.log = config.log;
             this.complete.push(complete);
             this.serialPort = new SerialPort(config.portName, this.settings);
-            const parser = new Readline();
-            this.serialPort.pipe(parser);
-            parser.on('data', console.log);
-            this.serialPort.write('ROBOT PLEASE RESPOND\n');
+
+            this.serialPort.on('data', function (data) {
+                console.log('Data:', data);
+            });
 
             var pThis = this;
             //this.serialPort.on('data', function (data) {

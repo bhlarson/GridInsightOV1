@@ -8,11 +8,5 @@
   },
   "dependencies": {
     "serialport": "^6.0.4",
-    "virtual-serialport": "0.2.1",
-    "dotenv": "4.0.0",
-    "express": "^4.15.4",
-    "log4js": "^2.3.3",
-    "mysql": "^2.14.1",
-    "socket.io": "^2.0.4"
   }
 }

@@ -1,12 +1,13 @@
 console.log("Starting GritInsightOV1 on " + process.platform + " with node version " + process.version);
-require('dotenv').config({ path: './config.env' });
+//require('dotenv').config({ path: './config.env' });
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 
 SerialPort = require('serialport');
 portName = '/dev/ttyAMA0';
-settings = { baudrate: 115200, databits: 8, stopbits: 1, parity: 'none' };
+//portName = 'COM2';
+settings = { baudRate: 115200, dataBits: 8, stopBits: 1, parity: 'none' };
 //var io = require('socket.io')(http);
 //var ioSocket; 
 //var ov1 = require('./OV1');
@@ -15,9 +16,8 @@ settings = { baudrate: 115200, databits: 8, stopbits: 1, parity: 'none' };
 console.log("Dependancies Found");
 
 port = new SerialPort(portName, settings);
-
 port.on('data', function (data) {
-    console.log('Data:', data);
+    console.log('data received: ' + data.toString());
 });
 
 //log4js.configure({

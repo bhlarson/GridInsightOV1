@@ -12,7 +12,7 @@ var OVPort = function () {
     this.active = false;
     this.portName = '/dev/ttyAMA0';
     this.settings = { baudrate: 115200, databits: 8, stopbits: 1, parity: 'none' };
-    this.serialPort = {};
+    this.port = {};
     this.message = {}
     this.timeout = 0;
     this.log = {};
@@ -31,14 +31,14 @@ OVPort.prototype = {
         try {
             this.log = config.log;
             this.complete.push(complete);
-            this.serialPort = new SerialPort(config.portName, this.settings);
+            this.port = new SerialPort(config.portName, this.settings);
 
-            this.serialPort.on('data', function (data) {
+            this.port.on('data', function (data) {
                 console.log('Data:', data);
             });
 
             var pThis = this;
-            //this.serialPort.on('data', function (data) {
+            //this.port.on('data', function (data) {
             //    //console.log('serial data ascii: ' + data.toString('ascii'));
             //    //console.log('serial data utf8: ' + data.toString('utf8'));
             //    //console.log('serial data latin1: ' + data.toString('latin1'));
@@ -57,13 +57,13 @@ OVPort.prototype = {
             //    //console.log('Appended read buffer: ' + pThis.readString);y
             //    //pThis.Evaluate(pThis.readString);
             //});
-            this.serialPort.on('err', function (err) {
+            this.port.on('err', function (err) {
                 var result = { err: err };
                 this.complete.forEach(function callback(complete) {
                     complete(result);
                 });
             });
-            this.serialPort.on('open', function () {
+            this.port.on('open', function () {
             });
         }
         catch (err) {
@@ -121,7 +121,7 @@ OVPort.prototype = {
             var sendBuffer = this.writeString;
             this.writeString = ''
             console.log('Evaluate write ' + sendBuffer);
-            this.serialPort.write(sendBuffer, function (err, result) {
+            this.port.write(sendBuffer, function (err, result) {
                 if (err) {
                     console.log('write error ' + err);
                     //reject({ result: module.exports.CompleteEnum.ACTION_FAIL, error: err });

@@ -13,11 +13,13 @@ settings = { baudRate: 115200, dataBits: 8, stopBits: 1, parity: 'none' };
 //var ov1 = require('./OV1');
 //var mysql = require('mysql');
 //var log4js = require('log4js');
+
 console.log("Dependancies Found");
 
-port = new SerialPort(portName, settings);
-port.on('data', function (data) {
-    console.log('data received: ' + data.toString());
+
+sp = new SerialPort(portName, settings);
+sp.on('data', function (data) {
+    process.stdout.write(data.toString());
 });
 
 //log4js.configure({
@@ -53,6 +55,7 @@ port.on('data', function (data) {
 //console.log("mysql.createPool exists=" + (typeof pool !== 'undefined'));
 
 //var port = Number(process.env.nodeport) || 1337;
+var port = 1337;
 //app.use(express.static('public'));
 
 //app.get('/', function (req, res) {
@@ -60,7 +63,7 @@ port.on('data', function (data) {
 //});
 
 http.listen(port, function () {
-    console.log('Socket.IO listening on port ' + port);
+    console.log("Listening on port " + port);
 });
 
 //io.on('connection', function (socket) {

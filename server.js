@@ -55,7 +55,7 @@ sp.on('data', function (data) {
 //console.log("mysql.createPool exists=" + (typeof pool !== 'undefined'));
 
 //var port = Number(process.env.nodeport) || 1337;
-var port = 1337;
+var port = 1339;
 //app.use(express.static('public'));
 
 //app.get('/', function (req, res) {

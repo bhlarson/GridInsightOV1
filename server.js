@@ -3,24 +3,22 @@ console.log("Starting GritInsightOV1 on " + process.platform + " with node versi
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
+var io = require('socket.io')(http);
+var ioSocket;
 
 SerialPort = require('serialport');
+const Delimiter = SerialPort.parsers.Delimiter;
 portName = '/dev/ttyAMA0';
 //portName = 'COM2';
 settings = { baudRate: 115200, dataBits: 8, stopBits: 1, parity: 'none' };
-//var io = require('socket.io')(http);
-//var ioSocket; 
+
+ 
 //var ov1 = require('./OV1');
 //var mysql = require('mysql');
 //var log4js = require('log4js');
 
 console.log("Dependancies Found");
 
-
-sp = new SerialPort(portName, settings);
-sp.on('data', function (data) {
-    process.stdout.write(data.toString());
-});
 
 //log4js.configure({
 //    appenders: { command: { type: 'file', filename: 'state.log' } },
@@ -66,28 +64,36 @@ http.listen(port, function () {
     console.log("Listening on port " + port);
 });
 
-//io.on('connection', function (socket) {
-//    socket.broadcast.emit('Server Connected');
-//    ioSocket = socket;
-//    socket.on('disconnect', function () {
-//        console.log('Socket.IO  disconnected ' + socket.id);
-//    });
-//    socket.on('connect_failed', function () {
-//        console.log('socket.io connect_failed');
-//    })
-//    socket.on('reconnect_failed', function () {
-//        console.log('socket.io reconnect_failed');
-//    })
-//    socket.on('error', function (err) {
-//        console.log('socket.io error:' + err);
-//    })
-//    socket.on('Command', function (data) {
-//        command = { name: data.cmd, value: data.val };
-//        ov1Port.Input(command);
+io.on('connection', function (socket) {
+    socket.broadcast.emit('Server Connected');
+    ioSocket = socket;
+    socket.on('disconnect', function () {
+        console.log('Socket.IO  disconnected ' + socket.id);
+    });
+    socket.on('connect_failed', function () {
+        console.log('socket.io connect_failed');
+    })
+    socket.on('reconnect_failed', function () {
+        console.log('socket.io reconnect_failed');
+    })
+    socket.on('error', function (err) {
+        console.log('socket.io error:' + err);
+    })
+    socket.on('Command', function (data) {
+        command = { name: data.cmd, value: data.val };
+        ov1Port.Input(command);
 
-//        console.log('Command ' + JSON.stringify(data));
-//    });
-//});
+        console.log('Command ' + JSON.stringify(data));
+    });
+});
+
+sp = new SerialPort(portName, settings);
+const parser = port.pipe(new Delimiter({ delimiter: Buffer.from('EOL') }));
+parser.on('data', console.log);
+sp.on('data', function (data) {
+    process.stdout.write(data);
+    ioSocket.emit('data', data);
+});
 
 module.exports = app;
 console.log("GridInsightOIV-1 Started");

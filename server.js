@@ -1,15 +1,21 @@
 console.log("Starting GritInsightOV1 on " + process.platform + " with node version " + process.version);
-//require('dotenv').config({ path: './config.env' });
+require('dotenv').config({ path: './config.env' });
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var ioSocket;
 
-SerialPort = require('serialport');
+var SerialPort;
+if (process.env.simulation == 'true') {
+    SerialPort = require('virtual-serialport');
+}
+else {
+    SerialPort = require('serialport');
+}
+
 const Delimiter = SerialPort.parsers.Delimiter;
-portName = '/dev/ttyAMA0';
-//portName = 'COM2';
+portName = process.env.serialport;
 settings = { baudRate: 115200, dataBits: 8, stopBits: 1, parity: 'none' };
 
  
@@ -52,13 +58,13 @@ console.log("Dependancies Found");
 
 //console.log("mysql.createPool exists=" + (typeof pool !== 'undefined'));
 
-//var port = Number(process.env.nodeport) || 1337;
-var port = 1339;
-//app.use(express.static('public'));
+var port = Number(process.env.nodeport) || 1339;
+app.use(express.static('public'));
 
-//app.get('/', function (req, res) {
-//    res.sendFile('index.html')
-//});
+app.get('/', function (req, res) {
+    res.sendFile('index.html')
+});
+
 
 http.listen(port, function () {
     console.log("Listening on port " + port);
@@ -81,18 +87,16 @@ io.on('connection', function (socket) {
     })
     socket.on('Command', function (data) {
         command = { name: data.cmd, value: data.val };
-        ov1Port.Input(command);
-
         console.log('Command ' + JSON.stringify(data));
     });
 });
 
 sp = new SerialPort(portName, settings);
-const parser = port.pipe(new Delimiter({ delimiter: Buffer.from('EOL') }));
-parser.on('data', console.log);
+const parser = sp.pipe(new Delimiter({ delimiter: Buffer.from('EOL') }));
+
 sp.on('data', function (data) {
     process.stdout.write(data);
-    ioSocket.emit('data', data);
+    ioSocket.emit('data', data.toString());
 });
 
 module.exports = app;

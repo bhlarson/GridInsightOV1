@@ -7,6 +7,11 @@
     "name": "blarson"
   },
   "dependencies": {
-    "serialport": "^6.0.4",
+    "dotenv": "4.0.0",
+    "express": "^4.15.4",
+    "log4js": "^2.3.3",
+    "serialport": "6.0.4",
+    "socket.io": "^1.7.2",
+    "virtual-serialport": "0.2.1"
   }
 }

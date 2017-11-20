@@ -99,32 +99,36 @@ sp.on('data', function (data) {
 
     if (ioSocket) {
         receiveString += data.toString();
-        consol.log("receiveString:" + receiveString);
+        console.log("\nReceiveString:" + receiveString);
 
         var parseStart = receiveString.indexOf('$')
-        var parseEnd = receiveString.lastIndexOf('\r\n') + 2;
-        var recievedLines = receiveString.slice(parseStart, parseEnd); // Full lines of data
-        receiveString = receiveString.slice(parseEnd, receiveString.length); // Remove data that will be parsed
-        consol.log("parseStart:" + parseStart + " parseEnd:" + parseEnd + " recievedLines:" + recievedLines.length + " new receiveString:" + receiveString)
+        var parseEnd = receiveString.lastIndexOf('\r\n');
+        if (parseStart >= 0 && parseEnd >= parseStart) {
+            var fullLines = receiveString.slice(parseStart, parseEnd); // Full lines of data
+            receiveString = receiveString.slice(parseEnd+2, receiveString.length); // Remove data that will be parsed
+            var lineArray = fullLines.split('\r\n'); // Array of lines
+            console.log("parseStart:" + parseStart + " parseEnd:" + parseEnd +
+                " fullLines:" + fullLines + " final receiveString:" + receiveString +
+                " lineArray.length=" + lineArray.length)
 
-        var lineArray = recievedLines.split('\r\n'); // Array of lines
-
-        for (var i = 0; i < lineArray.length; i++) {
-            var entries = lineArray[i].split(',');
-            if (entries.length > 0) {
-                switch (entries[0]) {
-                    case '$UMBOM':
-                        if (entries.length >= 6) {
-                            var reading = { id: entries[1], consumption: entries[2], flag1: entries[3], flag2: entries[4], strength: entries[5] };
-                            if (entries[0] == '83621600') {
-                                ioSocket.emit('Badger ORION', reading);
+            for (var i = 0; i < lineArray.length; i++) {
+                var entries = lineArray[i].split(',');
+                if (entries.length > 0) {
+                    switch (entries[0]) {
+                        case '$UMBOM':
+                            if (entries.length >= 6) {
+                                var reading = { id: entries[1], consumption: entries[2], flag1: entries[3], flag2: entries[4], strength: entries[5] };
+                                if (entries[0] == '83621600') {
+                                    ioSocket.emit('Badger ORION', reading);
+                                }
                             }
-                        }
-                        break;
-                }
+                            break;
+                    }
 
+                }
             }
         }
+
         ioSocket.emit('data', data.toString());
     }
 });

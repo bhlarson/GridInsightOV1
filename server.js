@@ -93,35 +93,37 @@ io.on('connection', function (socket) {
 
 sp = new SerialPort(portName, settings);
 const parser = sp.pipe(new Delimiter({ delimiter: Buffer.from('EOL') }));
-var reciveString = "";
+var receiveString = "";
 sp.on('data', function (data) {
-    reciveString += data.toString();
-    var parseStart = indexOf('$')
-    var parseEnd = reciveString.lastIndexOf('\r\n') + 2;
-    var recievedLines = reciveString.slice(parseStart, parseEnd); // Full lines of data
-    var reciveString = reciveString.slice(parseEnd, reciveString.length); // Remove data that will be parsed
-
-    var lineArray = recievedLines.split('\r\n'); // Array of lines
-
-    for (var i = 0; i < lineArray.length; i++) {
-        var entries = lineArray[i].split(',');
-        if (entries.length > 0) {
-            switch (entries[0]) {
-                case '$UMBOM':
-                    if (entries.length >= 6) {
-                        var reading = { id:entries[1], consumption:entries[2], flag1:entries[3], flag2:entries[4], strength:entries[5] };
-                        if (entries[0] == '83621600') {
-                            ioSocket.emit('Badger ORION', reading);
-                        }
-                    }
-                break;
-            }
-
-        }
-    }
-
     process.stdout.write(data);
-    ioSocket.emit('data', data.toString());
+
+    if (ioSocket) {
+        receiveString += data.toString();
+        var parseStart = receiveString.indexOf('$')
+        var parseEnd = receiveString.lastIndexOf('\r\n') + 2;
+        var recievedLines = receiveString.slice(parseStart, parseEnd); // Full lines of data
+        receiveString = receiveString.slice(parseEnd, receiveString.length); // Remove data that will be parsed
+
+        var lineArray = recievedLines.split('\r\n'); // Array of lines
+
+        for (var i = 0; i < lineArray.length; i++) {
+            var entries = lineArray[i].split(',');
+            if (entries.length > 0) {
+                switch (entries[0]) {
+                    case '$UMBOM':
+                        if (entries.length >= 6) {
+                            var reading = { id: entries[1], consumption: entries[2], flag1: entries[3], flag2: entries[4], strength: entries[5] };
+                            if (entries[0] == '83621600') {
+                                ioSocket.emit('Badger ORION', reading);
+                            }
+                        }
+                        break;
+                }
+
+            }
+        }
+        ioSocket.emit('data', data.toString());
+    }
 });
 
 module.exports = app;

@@ -99,10 +99,13 @@ sp.on('data', function (data) {
 
     if (ioSocket) {
         receiveString += data.toString();
+        consol.log("receiveString:" + receiveString);
+
         var parseStart = receiveString.indexOf('$')
         var parseEnd = receiveString.lastIndexOf('\r\n') + 2;
         var recievedLines = receiveString.slice(parseStart, parseEnd); // Full lines of data
         receiveString = receiveString.slice(parseEnd, receiveString.length); // Remove data that will be parsed
+        consol.log("parseStart:" + parseStart + " parseEnd:" + parseEnd + " recievedLines:" + recievedLines.length + " new receiveString:" + receiveString)
 
         var lineArray = recievedLines.split('\r\n'); // Array of lines
 

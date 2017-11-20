@@ -9,9 +9,17 @@ socket.emit('Command', {
 socket.on('data', function (data) {
     console.log(data);
 
+    //var msg = document.getElementById('ov1msg');
+    //var prevMessage = msg.value;
+    //msg.value = (prevMessage + data);
+});
+
+socket.on('Badger ORION', function (data) {
+    console.log(stringify(data));
+
     var msg = document.getElementById('ov1msg');
     var prevMessage = msg.value;
-    msg.value = (prevMessage + data);
+    msg.value = (prevMessage + stringify(data)+'\n');
 });
 
 function OV1Command()

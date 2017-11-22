@@ -118,9 +118,9 @@ sp.on('data', function (data) {
                         case '$UMBOM':
                             if (entries.length >= 6) {
                                 var reading = { id: entries[1], consumption: entries[2], flag1: entries[3], flag2: entries[4], strength: entries[5] };
-                                if (entries[0] == '83621600') {
+                                //if (entries[0] == '83621600') {
                                     ioSocket.emit('Badger ORION', reading);
-                                }
+                                //}
                             }
                             break;
                     }

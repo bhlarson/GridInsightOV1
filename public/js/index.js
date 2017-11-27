@@ -22,6 +22,14 @@ socket.on('Badger ORION', function (data) {
     msg.value = (prevMessage + JSON.stringify(data)+'\n');
 });
 
+socket.on('Itron SCM', function (data) {
+    //console.log(JSON.stringify(data));
+
+    var msg = document.getElementById('ov1msg');
+    var prevMessage = msg.value;
+    msg.value = (prevMessage + JSON.stringify(data) + '\n');
+});
+
 function OV1Command()
 {
     var cmdSel = document.getElementById('cmdSel');

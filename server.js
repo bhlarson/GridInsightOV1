@@ -14,7 +14,6 @@ else {
     SerialPort = require('serialport');
 }
 
-const Delimiter = SerialPort.parsers.Delimiter;
 portName = process.env.serialport;
 settings = { baudRate: 115200, dataBits: 8, stopBits: 1, parity: 'none' };
 
@@ -86,13 +85,23 @@ io.on('connection', function (socket) {
         console.log('socket.io error:' + err);
     })
     socket.on('Command', function (data) {
-        command = { name: data.cmd, value: data.val };
         console.log('Command ' + JSON.stringify(data));
+        var writeString = '';
+        if (data.cmd) {
+            writeString += data.cmd;
+            if (data.cmd && (data.cmd == 'MODE' || data.cmd == 'SYNC')) {
+                writeString += ' ' + data.val.toString();
+            }
+            writeString += '\r\n';
+
+            if (sp) {
+                sp.write(writeString);
+            }
+        }
     });
 });
 
 sp = new SerialPort(portName, settings);
-const parser = sp.pipe(new Delimiter({ delimiter: Buffer.from('EOL') }));
 var receiveString = "";
 sp.on('data', function (data) {
     process.stdout.write(data);

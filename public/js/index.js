@@ -15,11 +15,11 @@ socket.on('data', function (data) {
 });
 
 socket.on('Badger ORION', function (data) {
-    console.log(stringify(data));
+    //console.log(JSON.stringify(data));
 
     var msg = document.getElementById('ov1msg');
     var prevMessage = msg.value;
-    msg.value = (prevMessage + stringify(data)+'\n');
+    msg.value = (prevMessage + JSON.stringify(data)+'\n');
 });
 
 function OV1Command()

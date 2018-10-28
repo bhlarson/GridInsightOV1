@@ -132,7 +132,7 @@ sp.on('data', function (data) {
                                 //}
                             }
                             break;
-                        case '$UMBOM':
+                        case '$UMSCM':
                             if (entries.length >= 6) {
                                 var reading = { id: entries[1], consumption: entries[2], ErtType: entries[3], TamperFlag: entries[4], strength: entries[5] };
                                 //if (entries[0] == '83621600') {

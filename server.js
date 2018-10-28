@@ -133,7 +133,7 @@ sp.on('data', function (data) {
                 var entries = lineArray[i].split(',');
                 if (entries.length > 0) {
                     switch (entries[0]) {
-                        case '$UMSCM':
+                        case '$UMBOM':
                             if (entries.length >= 6) {
                                 var reading = { id: entries[1], consumption: entries[2], flag1: entries[3], flag2: entries[4], strength: entries[5] };
                                 if (entries[0] == '83621600') {

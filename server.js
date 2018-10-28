@@ -4,7 +4,16 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var mysql = require('mysql');
 var ioSocket;
+
+var pool = mysql.createPool({
+    connectionLimit: 10,
+    host: process.env.dbhost,
+    user: process.env.dbuser,
+    //password: 'password',
+    database: process.env.dbname
+});
 
 var SerialPort;
 if (process.env.simulation == 'true') {

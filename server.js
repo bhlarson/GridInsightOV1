@@ -15,6 +15,8 @@ var pool = mysql.createPool({
     database: process.env.dbname
 });
 
+var srvMeters = [];
+
 var SerialPort;
 if (process.env.simulation == 'true') {
     SerialPort = require('virtual-serialport');
@@ -68,9 +70,37 @@ console.log("Dependancies Found");
 
 var port = Number(process.env.nodeport) || 1339;
 app.use(express.static('public'));
+app.use('/jq', express.static(__dirname + '/node_modules/jquery/dist/'));
 
 app.get('/', function (req, res) {
     res.sendFile('index.html')
+});
+
+app.get('/GetMeters', function (req, res) {
+    GetMeters().then(function (meters) {
+        srvMeters = meters;
+        res.send(meters);
+    }, function (failure) {
+        res.send(failure);
+    });
+});
+
+app.get('/AddDevice', function (req, res) {
+    var newConfig = req.query.update;
+    var sql = 'INSERT INTO ' + process.env.dbdevices + ' SET ?';
+    
+    pool.query(sql, newConfig, function (dberr, dbres, dbfields) {
+        res.send(dberr);
+    });
+});
+
+app.get('/RemoveDevice', function (req, res) {
+    var id = req.query.id;
+    var sql = 'DELETE FROM ' + process.env.dbdevices + ' WHERE id=?';
+    
+    pool.query(sql, id, function (dberr, dbres, dbfields) {
+        res.send(dberr);
+    });
 });
 
 
@@ -136,12 +166,15 @@ sp.on('data', function (data) {
                         case '$UMBOM':
                             if (entries.length >= 6) {
                                 var reading = { id: entries[1], consumption: entries[2], flag1: entries[3], flag2: entries[4], strength: entries[5] };
-                                if (entries[0] == '83621600') {
-                                    ioSocket.emit('Badger ORION', reading);
-                                }
+                                srvMeters.forEach(meter => {
+                                    if (entries[1] == meter.id) {
+                                        Record(reading)
+                                    }                                    
+                                });
+
                             }
                             break;
-                        /*case '$UMSCM':
+                        case '$UMSCM':
                             if (entries.length >= 6) {
                                 var reading = { id: entries[1], consumption: entries[2], ErtType: entries[3], TamperFlag: entries[4], strength: entries[5] };
                                 //if (entries[0] == '83621600') {
@@ -149,7 +182,6 @@ sp.on('data', function (data) {
                                 //}
                             }
                             break;
-                        */
                     }
 
                 }
@@ -160,5 +192,37 @@ sp.on('data', function (data) {
     }
 });
 
+function GetMeters() {
+    return new Promise(function (resolve, reject) {
+        var connectionString = 'SELECT * FROM `' + process.env.dbdevices +'`';
+        pool.query(connectionString, function (dberr, dbres, dbfields) {
+            if (dberr)
+                reject(dberr);
+            else {
+                resolve(dbres);
+            }
+        });
+    });
+}
+
+async function Record(reading) {
+
+    var record = {
+        time: new Date(),
+        id: reading.id,
+        value: reading.consumption,
+        data01: reading.flag1,
+        data02: reading.flag2,
+        strength: reading.strength,
+    };    
+    await pool.query('INSERT INTO '+ process.env.dblog + ' SET ?', record); // Record to DB
+    io.sockets.emit('record', record); // Send record to listening clients
+}
+
 module.exports = app;
 console.log("GridInsightOIV-1 Started");
+
+GetMeters().then(function (meters) {
+    srvMeters = meters;
+    console.log("Meters: " + JSON.stringify(srvMeters));
+});

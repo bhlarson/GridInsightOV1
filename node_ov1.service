@@ -1,0 +1,23 @@
+# Install as /etc/systemd/system/node_ov1.service
+#$ sudo systemctl daemon-reload -- reload service
+#$ sudo systemctl enable node_ov1.service
+#$ sudo systemctl restart node_ov1.service -- restart process
+#$ ps aux -- list running processes
+# Output to /var/log/syslog
+
+[Unit]
+Description=Node.js Curtain Control Server
+#Requires=After=mysql.service       # Requires the mysql service to run first
+
+[Service]
+ExecStart=/usr/bin/node /home/pi/GridInsightOV1/server.js
+WorkingDirectory=/home/pi/GridInsightOV1
+Restart=on-failure
+SyslogIdentifier=GridInsightOV1
+User=pi
+Group=pi
+Environment=PATH=/home/pi/GridInsightOV1
+Environment=NODE_ENV=production PORT=4464
+
+[Install]
+WantedBy=multi-user.target

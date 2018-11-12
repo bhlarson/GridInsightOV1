@@ -4,7 +4,7 @@
   "description": "GridInsightOV1",
   "main": "server.js",
   "author": {
-    "name": "blarson"
+    "name": "Brad Larson"
   },
   "dependencies": {
     "dotenv": "4.0.0",
@@ -13,6 +13,8 @@
     "serialport": "6.0.4",
     "socket.io": "^1.7.2",
     "virtual-serialport": "0.2.1",
-    "mysql": "2.13.0"
+    "mysql": "2.13.0",
+    "jquery": "3.3.1",
+    "jquery-ui":"1.12.1"
   }
 }

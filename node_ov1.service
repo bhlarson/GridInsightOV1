@@ -1,9 +1,13 @@
 # Install as /etc/systemd/system/node_ov1.service
-#$ sudo systemctl daemon-reload -- reload service
+#$ sudo systemctl daemon-reload # reload service
 #$ sudo systemctl enable node_ov1.service
 #$ sudo systemctl restart node_ov1.service -- restart process
+#$ 
+
 #$ ps aux -- list running processes
+#$ ps -ef | grep node_ov1
 # Output to /var/log/syslog
+#$ tail -f /var/log/syslog
 
 [Unit]
 Description=Node.js Curtain Control Server

@@ -145,49 +145,49 @@ var receiveString = "";
 sp.on('data', function (data) {
     process.stdout.write(data);
 
-    if (ioSocket) {
-        receiveString += data.toString();
-        console.log("\nReceiveString:" + receiveString);
+    receiveString += data.toString();
+    console.log("\nReceiveString:" + receiveString);
 
-        var parseStart = receiveString.indexOf('$')
-        var parseEnd = receiveString.lastIndexOf('\r\n');
-        if (parseStart >= 0 && parseEnd >= parseStart) {
-            var fullLines = receiveString.slice(parseStart, parseEnd); // Full lines of data
-            receiveString = receiveString.slice(parseEnd+2, receiveString.length); // Remove data that will be parsed
-            var lineArray = fullLines.split('\r\n'); // Array of lines
-            console.log("parseStart:" + parseStart + " parseEnd:" + parseEnd +
-                " fullLines:" + fullLines + " final receiveString:" + receiveString +
-                " lineArray.length=" + lineArray.length)
+    var parseStart = receiveString.indexOf('$')
+    var parseEnd = receiveString.lastIndexOf('\r\n');
+    if (parseStart >= 0 && parseEnd >= parseStart) {
+        var fullLines = receiveString.slice(parseStart, parseEnd); // Full lines of data
+        receiveString = receiveString.slice(parseEnd + 2, receiveString.length); // Remove data that will be parsed
+        var lineArray = fullLines.split('\r\n'); // Array of lines
+        console.log("parseStart:" + parseStart + " parseEnd:" + parseEnd +
+            " fullLines:" + fullLines + " final receiveString:" + receiveString +
+            " lineArray.length=" + lineArray.length)
 
-            for (var i = 0; i < lineArray.length; i++) {
-                var entries = lineArray[i].split(',');
-                if (entries.length > 0) {
-                    switch (entries[0]) {
-                        case '$UMBOM':
-                            if (entries.length >= 6) {
-                                var reading = { id: entries[1], consumption: entries[2], flag1: entries[3], flag2: entries[4], strength: entries[5] };
-                                srvMeters.forEach(meter => {
-                                    if (entries[1] == meter.id) {
-                                        Record(reading)
-                                    }                                    
-                                });
+        for (var i = 0; i < lineArray.length; i++) {
+            var entries = lineArray[i].split(',');
+            if (entries.length > 0) {
+                switch (entries[0]) {
+                    case '$UMBOM':
+                        if (entries.length >= 6) {
+                            var reading = { id: entries[1], consumption: entries[2], flag1: entries[3], flag2: entries[4], strength: entries[5] };
+                            srvMeters.forEach(meter => {
+                                if (entries[1] == meter.id) {
+                                    Record(reading)
+                                }
+                            });
 
-                            }
-                            break;
-                        case '$UMSCM':
-                            if (entries.length >= 6) {
-                                var reading = { id: entries[1], consumption: entries[2], ErtType: entries[3], TamperFlag: entries[4], strength: entries[5] };
-                                //if (entries[0] == '83621600') {
-                                ioSocket.emit('Itron SCM', reading);
-                                //}
-                            }
-                            break;
-                    }
-
+                        }
+                        break;
+                    case '$UMSCM':
+                        if (entries.length >= 6) {
+                            var reading = { id: entries[1], consumption: entries[2], ErtType: entries[3], TamperFlag: entries[4], strength: entries[5] };
+                            //if (entries[0] == '83621600') {
+                            ioSocket.emit('Itron SCM', reading);
+                            //}
+                        }
+                        break;
                 }
+
             }
         }
+    }
 
+    if (ioSocket) {
         ioSocket.emit('data', data.toString());
     }
 });
@@ -214,9 +214,19 @@ async function Record(reading) {
         data01: reading.flag1,
         data02: reading.flag2,
         strength: reading.strength,
-    };    
-    await pool.query('INSERT INTO '+ process.env.dblog + ' SET ?', record); // Record to DB
-    io.sockets.emit('record', record); // Send record to listening clients
+    };
+
+    console.log(JSON.stringify(record))
+
+    //await pool.query('INSERT INTO '+ process.env.dblog + ' SET ?', record); // Record to DB
+    //io.sockets.emit('record', record); // Send record to listening clients
+
+    var sql = 'INSERT INTO ' + process.env.dblog + ' SET ?';
+    pool.query(sql, [record], function (dberr, dbres, dbfields) {
+        io.sockets.emit('status', record); // Send record to listening clients
+        if (dberr)
+            io.sockets.emit('status', dberr)
+    });
 }
 
 module.exports = app;

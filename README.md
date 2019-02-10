@@ -14,13 +14,13 @@ Log onto Raspberry PI with Putty or other command line terminal?1) Clone reposit
 6) auto start project:
 a) Log into to pi as root in putty
 b) Create a symbolic link to  �nodecurtain.service� in /etc/systemd/system	
->  sudo ln nodecurtain.service /etc/systemd/system/nodecurtain.service
+>  sudo ln node_ov1.service /etc/systemd/system/node_ov1.service
 c) Enable and start:
-$ sudo systemctl enable nodecurtain.service
-$ sudo systemctl stop nodecurtain.service
-$ sudo systemctl start nodecurtain.service
-$ sudo systemctl restart nodecurtain.service
-$ sudo systemctl disable nodecurtain.service
+$ sudo systemctl enable node_ov1.service
+$ sudo systemctl stop node_ov1.service
+$ sudo systemctl start node_ov1.service
+$ sudo systemctl restart node_ov1.service
+$ sudo systemctl disable node_ov1.service
 $ ps aux
 7) Console out logged to "/var/log/syslog" startup logged to "/var/log/messages" Create mysql datbase:
 8) Remote debug from Visual Studio Code 
@@ -50,6 +50,7 @@ $ ps aux
 		$  sudo systemctl disable nodecurtain.service
 		$ ps aux
 10) Console out logged to "/var/log/syslog" startup logged to "/var/log/messages"??Create mysql datbase:????
+> tail -f /var/log/syslog
 
 Notes: Set timezone: >sudo dpkg-reconfigure tzdata?Reboot: >sudo reboot
 >ps <- list running processes

@@ -2,7 +2,11 @@
 #$ sudo systemctl daemon-reload # reload service
 #$ sudo systemctl enable node_ov1.service
 #$ sudo systemctl restart node_ov1.service -- restart process
-#$ 
+#$ sudo systemctl enable node_ov1.service
+#$ sudo systemctl stop node_ov1.service
+#$ sudo systemctl start node_ov1.service
+#$ sudo systemctl restart node_ov1.service
+#$ sudo systemctl disable node_ov1.service
 
 #$ ps aux -- list running processes
 #$ ps -ef | grep node_ov1

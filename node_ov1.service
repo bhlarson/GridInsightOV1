@@ -18,7 +18,7 @@ Description=Node.js Curtain Control Server
 #Requires=After=mysql.service       # Requires the mysql service to run first
 
 [Service]
-ExecStart=/usr/bin/node /home/pi/GridInsightOV1/server.js
+ExecStart=/usr/bin/nodejs /home/pi/GridInsightOV1/server.js
 WorkingDirectory=/home/pi/GridInsightOV1
 Restart=on-failure
 SyslogIdentifier=GridInsightOV1

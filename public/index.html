@@ -14,6 +14,15 @@
 		<input type="button" id="Login" onclick="LogIn()" value="Log In" />
     </div>
     <fieldset>
+        <div id="TemperatureGraph"  class="Plot"></div>
+         <footer>
+            <form onsubmit="Plot(Start.valueAsDate, End.valueAsDate); return false;">
+                Plot:
+                <input type="datetime-local" id='PlotStart' name="Start">
+                <input type="datetime-local" id='PlotEnd' name="End">
+                <input type="submit">
+            </form>
+        </footer>
         <label>Command:</label>
         <select id="cmdSel">
             <option value="MODE">MODE</option>
@@ -28,7 +37,10 @@
 
     <textarea id="ov1msg"></textarea>
 
-    <script src="js/socket.io.js"></script>
+    <script src="js/d3.v4.min.js"></script>
+    <script src="js/d3-legend.min.js"></script>
+    <script src="js/socket.io.min.js"></script>
+    <script src="js/jquery.min.js"></script>
     <script src="js/index.js"></script>
 </body>
 </html>

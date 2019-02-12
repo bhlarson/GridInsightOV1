@@ -6,6 +6,11 @@
   "author": {
     "name": "Brad Larson"
   },
+  "repository": {
+      "type": "git",
+      "url": "https://github.com/bhlarson/GridInsightOV1"
+
+  },
   "dependencies": {
     "dotenv": "4.0.0",
     "express": "^4.15.4",

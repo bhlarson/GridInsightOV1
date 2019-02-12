@@ -35,38 +35,28 @@ settings = { baudRate: 115200, dataBits: 8, stopBits: 1, parity: 'none' };
 
 console.log("Dependancies Found");
 
+if (!Date.prototype.toSQLString) {
+    (function () {
+        
+        function pad(number) {
+            if (number < 10) {
+                return '0' + number;
+            }
+            return number;
+        }
+        
+        Date.prototype.toSQLString = function () {
+            //return this.format("yyyy-mm-dd hh-MM-ss");
+            return this.getUTCFullYear() +
+                '-' + pad(this.getUTCMonth() + 1) +
+                '-' + pad(this.getUTCDate()) +
+                ' ' + pad(this.getUTCHours()) +
+                '-' + pad(this.getUTCMinutes()) +
+                '-' + pad(this.getUTCSeconds());
+        };
+    }());
+}
 
-//log4js.configure({
-//    appenders: { command: { type: 'file', filename: 'state.log' } },
-//    categories: { default: { appenders: ['command'], level: 'ALL' } }
-//});
-//const cmdLog = log4js.getLogger('command');
-
-//var ov1Port = new ov1.OVPort();
-//ov1Port.Output(function (data) {
-//    console.log(data);
-//    if (data.serialData && ioSocket) {
-//        ioSocket.emit('data', data.serialData);
-//    }
-//});
-//var config = { log: cmdLog, portName: process.env.serialport };
-//ov1Port.Start(config, function (result) {
-//    console.log(result);
-//});
- 
-//command = { name: 'VRSN' };
-//ov1Port.Input(command);
-
-//// Home database credentials
-//var pool = mysql.createPool({
-//    connectionLimit: 10,
-//    host: process.env.dbhost,
-//    user: process.env.dbuser,
-//    //  password        : 'password',
-//    database: process.env.dbname
-//});
-
-//console.log("mysql.createPool exists=" + (typeof pool !== 'undefined'));
 
 var port = Number(process.env.nodeport) || 1339;
 app.use(express.static('public'));
@@ -100,6 +90,21 @@ app.get('/RemoveDevice', function (req, res) {
     
     pool.query(sql, id, function (dberr, dbres, dbfields) {
         res.send(dberr);
+    });
+});
+
+app.get('/Plot', function (req, res) {
+    var beginDateTime = req.query.begin;
+    var endDateTime = req.query.end;
+
+    GetLog(beginDateTime, endDateTime).then(function (logData) {
+        console.log('git /plot succeeded');
+        res.send(logData);
+    }).then(function (failure) {
+        console.log('git /plot failed');
+        res.send(failure);
+    }).catch(function(err){
+        console.log('git /plot catch promise rejection')        
     });
 });
 
@@ -236,3 +241,38 @@ GetMeters().then(function (meters) {
     srvMeters = meters;
     console.log("Meters: " + JSON.stringify(srvMeters));
 });
+
+function GetLog(begin, end){
+    //console.log("GetLog " + begin + ":" + end)
+    return new Promise(function (resolve, reject) {
+        var connectionString = 'SELECT * FROM '+ process.env.dblog +' WHERE ';
+        //console.log("Git Log connectionString: "+ connectionString)
+        if (begin && end) {
+            var dateBegin = new Date(begin);
+            var dateEnd = new Date(end);
+            connectionString += "time between '" + dateBegin.toSQLString() + "' and '" + dateEnd.toSQLString() + "'";
+        }
+        else if (begin) {
+            var dateBegin = new Date(begin);
+            connectionString += "time >= '" + dateBegin.toSQLString() + "'";
+        }
+        else if (end) {
+            var dateEnd = new Date(end);
+            connectionString += "time <= '" + dateEnd.toSQLString() + "'";
+        }
+        else {
+            connectionString += "1";
+        }
+        //console.log("Git Log final connectionString: "+ connectionString)
+        pool.query(connectionString, function (err, res, fields) {
+            if (err){
+                //console.log("GitLog query error "+ error)
+                reject(err);
+            }
+            else{
+                //console.log("GetLog query results " + JSON.stringify(res))
+                resolve(res);
+            }
+        });
+    });
+}

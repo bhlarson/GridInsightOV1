@@ -16,7 +16,7 @@
     <fieldset>
         <div id="TemperatureGraph"  class="Plot"></div>
          <footer>
-            <form onsubmit="Plot(Start.valueAsDate, End.valueAsDate); return false;">
+            <form onsubmit="Plot(Start.value, End.value); return false;">
                 Plot:
                 <input type="datetime-local" id='PlotStart' name="Start">
                 <input type="datetime-local" id='PlotEnd' name="End">

@@ -2,15 +2,27 @@
 var socket = io();
 var svg;
 
+Date.prototype.toDatetimeLocalString = function(){
+    var ret = new Date(this);
+    var offsetMin = this.getTimezoneOffset();
+    ret.setTime(this.getTime() - offsetMin*60000);
+        
+    // 2011-10-05T14:48:00
+    retStr = ret.toISOString().slice(0,16);
+    console.log("toDatetimeLocalString: "+retStr+ " offset:"+offsetMin)
+    return retStr;
+}
+
 init();
 function init() {
     socket.io._timeout = 30000;
     
-    var begin = new Date();
     var end = new Date();
-    $('#PlotStart').val(begin.toISOString().substring(0,19));
-    $('#PlotEnd').val(end.toISOString().substring(0,19));
+    var begin = new Date();
     begin.setDate(end.getDate() - 7);
+    
+    document.getElementById("PlotStart").value = begin.toDatetimeLocalString();
+    document.getElementById("PlotEnd").value = end.toDatetimeLocalString();
     Plot(begin, end);
 }
 

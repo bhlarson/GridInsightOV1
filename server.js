@@ -57,6 +57,19 @@ if (!Date.prototype.toSQLString) {
     }());
 }
 
+if(!Date.prototype.toDatetimeLocalString){
+    (function(){
+            var ret = new Date(this);
+            var offsetMin = ret.getTimezoneOffset();
+            ret.setTime(ret.getTime() + offsetMin*60000);
+        
+            // 2011-10-05T14:48:00
+            retStr = ret.getYear()+'-'+ret.getMonth()+'-'+ret.getDay()+'T'+ret.getHours()+':'+ret.getMinutes()+':'+ret.getSeconds();
+        
+          return retStr;
+    }());
+}
+
 
 var port = Number(process.env.nodeport) || 1339;
 app.use(express.static('public'));
